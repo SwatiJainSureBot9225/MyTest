@@ -1,4 +1,4 @@
-package com.example.swatijain.mytest;
+package com.example.swatijain.mytest.Activity;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -10,15 +10,14 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.swatijain.mytest.ApiIntegration.ApiClient;
-import com.example.swatijain.mytest.Responce.ListProductResponse;
-import com.example.swatijain.mytest.Responce.Product;
+import com.example.swatijain.mytest.R;
+import com.example.swatijain.mytest.Responce.ListOfVendor;
+import com.example.swatijain.mytest.Responce.Vendor;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -28,26 +27,26 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+public class ViewVendor extends AppCompatActivity {
 
-public class FirstActivity extends AppCompatActivity {
-
-    int item1;
+    int gVendorName;
     private Dialog progress;
+    Spinner gVendorSpinner;
     Toolbar toolbar;
-    Spinner gProductSpinner;
-    Product[] gProductList;
-    ArrayAdapter<String> gProductNameAdapter;
-    ArrayList<String> gProductNameArrayList;
+
+    Vendor[] gVendorList;
+    ArrayAdapter<String> gVendorNameAdapter;
+    ArrayList<String> gVendorNameArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_first);
+        setContentView(R.layout.vendor_view);
 
         //Tool Bar handle
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("View Product Details");
+        getSupportActionBar().setTitle("View Vendors");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -59,16 +58,16 @@ public class FirstActivity extends AppCompatActivity {
 
         progress = new Dialog(this, android.R.style.Theme_Translucent);
         progress.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //here we set layout of progress dialog
         progress.setContentView(R.layout.progress_dialog);
         progress.setCancelable(true);
 
-        gProductSpinner = (Spinner) findViewById(R.id.spinner_product);
-        GetProductName();
-
+        gVendorSpinner = (Spinner) findViewById(R.id.spinner_vendor);
+        GetVendorName();
     }
 
-    public void GetProductName() {
+    public void GetVendorName() {
+        try {
+            System.out.println("entering try block Get Vendor");
         progress.show();
         OkHttpClient.Builder client = new OkHttpClient.Builder();
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -79,36 +78,33 @@ public class FirstActivity extends AppCompatActivity {
                 .client(client.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        ApiClient request = retrofit.create(ApiClient.class);
+        ApiClient apiClient = retrofit.create(ApiClient.class);
 
-        Call<ListProductResponse> call = request.GetProductList();
-        call.enqueue(new Callback<ListProductResponse>() {
+        Call<ListOfVendor> call = apiClient.UserList();
+        call.enqueue(new Callback<ListOfVendor>() {
             @Override
-            public void onResponse(Call<ListProductResponse> call, Response<ListProductResponse> response) {
+            public void onResponse(Call<ListOfVendor> call, Response<ListOfVendor> response) {
 
                 if (response.isSuccessful()) {
+                    ListOfVendor vendor = response.body();
+                    gVendorList = vendor.getRecords();
 
-                    ListProductResponse list = response.body();
-                    gProductList = list.getRecords();
-
-                    for (int i = 0; i < gProductList.length; i++) {
-                        gProductNameArrayList = new ArrayList<>();
-
-                        gProductNameArrayList.add(0, gProductList[0].getProduct_name_hint());
+                    for (int i = 0; i < gVendorList.length; i++) {
+                        gVendorNameArrayList = new ArrayList<>();
+                        gVendorNameArrayList.add(0, gVendorList[0].getVendor_name_hint());
 
                         for (int j = 0; j <= i; j++) {
-                            gProductNameArrayList.add(1, gProductList[j].getProduct_name());
+                            gVendorNameArrayList.add(1, gVendorList[j].getVendor_name());
 
-                            gProductNameAdapter = new ArrayAdapter<>(FirstActivity.this, android.R.layout.simple_spinner_item, gProductNameArrayList);
-                            gProductSpinner.setAdapter(gProductNameAdapter);
-                            System.out.println("array value is" + gProductNameArrayList);
+                            gVendorNameAdapter = new ArrayAdapter<>(ViewVendor.this, android.R.layout.simple_spinner_item, gVendorNameArrayList);
+                            gVendorSpinner.setAdapter(gVendorNameAdapter);
+                            System.out.println("array value is" + gVendorNameAdapter);
 
-                            gProductSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            gVendorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                    item1 = gProductSpinner.getSelectedItemPosition();
-                                    gProductSpinner.setSelection(item1, false);
-                                    // Toast.makeText(getApplicationContext(),item1 , Toast.LENGTH_LONG).show();
+                                    gVendorName = gVendorSpinner.getSelectedItemPosition();
+                                    gVendorSpinner.setSelection(gVendorName, false);
                                 }
 
                                 @Override
@@ -117,25 +113,26 @@ public class FirstActivity extends AppCompatActivity {
                                 }
                             });
                         }
-
                     }
-
                 }
                 progress.dismiss();
             }
 
             @Override
-            public void onFailure(Call<ListProductResponse> call, Throwable t) {
+            public void onFailure(Call<ListOfVendor> call, Throwable t) {
                 progress.cancel();
-                Toast.makeText(FirstActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
-
-            }
+                Toast.makeText(ViewVendor.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                }
         });
+     }    catch(Exception e){
+            e.printStackTrace();
+            System.out.println("entering catch block now" + e);
+        }
     }
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(FirstActivity.this, MainActivity.class));
+        startActivity(new Intent(ViewVendor.this, MainActivity.class));
         super.onBackPressed();
         finish();
     }

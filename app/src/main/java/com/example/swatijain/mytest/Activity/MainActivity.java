@@ -1,10 +1,12 @@
-package com.example.swatijain.mytest;
+package com.example.swatijain.mytest.Activity;
 
         import android.content.Intent;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
         import android.view.View;
         import android.widget.Button;
+
+        import com.example.swatijain.mytest.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         but1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intpro = new Intent(MainActivity.this, FirstActivity.class);
+                Intent intpro = new Intent(MainActivity.this, ViewProduct.class);
                 startActivity(intpro);
                 finish();
 
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         but2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intrec = new Intent(MainActivity.this, SecondActivity.class);
+                Intent intrec = new Intent(MainActivity.this, ViewVendor.class);
                 startActivity(intrec);
                 finish();
 

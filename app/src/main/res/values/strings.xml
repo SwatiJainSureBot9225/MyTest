@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MyTest</string>
+    <string name="ViewProduct">VIEW PRODUCT</string>
+    <string name="ViewVendor">VIEW VENDOR</string>
 </resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_view_margin_left">25dp</dimen>
+    <dimen name="spin_marginRight">20dp</dimen>
+    <dimen name="spin_marginLeft">20dp</dimen>
+</resources>
